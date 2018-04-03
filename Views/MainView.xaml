@@ -1,0 +1,179 @@
+﻿<Window x:Class="PubgMod.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:s="https://github.com/canton7/Stylet"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:PubgMod"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:behaviors="clr-namespace:PubgMod.Behaviors"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:converter="clr-namespace:PubgMod.Converters"
+        mc:Ignorable="d" AllowsTransparency="true" Background="{x:Null}" KeyboardNavigation.TabNavigation="None"
+        Height="500" Width="900" WindowStyle="None" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converter:BoolToVisibilityConverterNegate x:Key="BoolToVisibilityConverterNegate"/>
+        <Image x:Key="CloseButton" Source="/PubgMod;component/cancel_icon.png" Margin="9" />
+        <Image x:Key="MinimizeButton" Source="/PubgMod;component/minimize_icon.png" Margin="8"/>
+        <Style x:Key="ToolbarButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Opacity" Value="0.4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                        <Border Background="Transparent">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Storyboard x:Key="TabAnimation" Storyboard.TargetName="TabControl">
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" From="0.5" To="1.0" Duration="0:0:0.3" />
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" From="0.5" To="1.0" Duration="0:0:0.3" />
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.3" />
+        </Storyboard>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border CornerRadius="0,0,15,15" BorderBrush="#AA009E97" BorderThickness="1" Panel.ZIndex="-1" Grid.RowSpan="2">
+            <Border.Background>
+                <RadialGradientBrush GradientOrigin="0.5,0" Center="0.5,0" RadiusX="0.8" RadiusY="0.9">
+                    <GradientStop Color="#FF314853" Offset="0"/>
+                    <GradientStop Color="#FF1E282F" Offset="1"/>
+                </RadialGradientBrush>
+            </Border.Background>
+        </Border>
+        <Border CornerRadius="0,0,15,15" Panel.ZIndex="-1" Grid.RowSpan="2">
+            <Border.Background>
+                <ImageBrush Opacity="0.07" ImageSource="/PubgMod;component/background_texture.png" Stretch="UniformToFill"/>
+            </Border.Background>
+        </Border>
+        
+
+        <TabControl x:Name="TabControl" Opacity="0" BorderBrush="Transparent" Background="Transparent" Grid.RowSpan="2" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverterNegate}}" ItemsSource="{Binding Items}" SelectedItem="{Binding ActiveItem}" DisplayMemberPath="DisplayName">
+            <TabControl.Style>
+                <Style TargetType="TabControl">
+                    <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="0.5" ScaleY="0.5" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Style>
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+                    <Setter Property="Visibility" Value="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Background="Transparent" Height="40" Margin="10,0,0,0">
+                                    <ContentPresenter  VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header">
+                                        <ContentPresenter.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="FontSize" Value="17" />
+                                            </Style>
+                                        </ContentPresenter.Resources>
+                                    </ContentPresenter>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+        <Grid Background="Transparent" Height="50" Width="665" HorizontalAlignment="Right" Name="DragableGrid" VerticalAlignment="Top"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0">
+            <Button Style="{StaticResource ToolbarButtonStyle}" Content="{StaticResource MinimizeButton}" Command="{s:Action MinimizeWindow}"/>
+            <Button Style="{StaticResource ToolbarButtonStyle}" Content="{StaticResource CloseButton}" Command="{s:Action CloseWindow}"/>
+        </StackPanel>
+
+        <ContentControl Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,2" s:View.Model="{Binding BottomSheetViewModel}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+        <md:DialogHost Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" IsOpen="{Binding IsProcessing}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16" Orientation="Horizontal">
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                             Value="0"
+                             IsIndeterminate="True"/>
+                    <Label Margin="10,0,0,0" Content="{Binding ProcessingText}" FontSize="14"/>
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+
+        <md:DialogHost Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" DialogClosing="{s:Action OnCloseExitDialog}" IsOpen="{Binding IsExitDialogOpen}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding OnExitText}"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding AcceptExitText}"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>True</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding CancelExitText}"
+                                        IsCancel="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>False</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+        <md:DialogHost Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" DialogClosing="{s:Action OnCloseUpdateDialog}" IsOpen="{Binding IsUpdateDialogOpen}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding OnUpdateText}"/>
+                    <TextBlock Margin="0,8,0,0" HorizontalAlignment="Center" Text="{Binding DownloadText}" FontSize="15" Cursor="Hand" TextDecorations="Underline" Visibility="{Binding AppSettings.IsFrozen, Converter={StaticResource BoolToVisibilityConverterNegate}}">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Command="{s:Action DownloadUpdateCommand}" MouseAction="LeftClick" />
+                        </TextBlock.InputBindings>
+                    </TextBlock>
+                    <Button HorizontalAlignment="Center" Style="{StaticResource MaterialDesignFlatButton}" Content="OK"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand"/>
+
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+
+        <md:DialogHost Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" IsOpen="{Binding IsChangelogDialogOpen}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding ChangelogTitleText}" FontWeight="Bold"/>
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding ChangelogText}"/>
+                    <Button HorizontalAlignment="Center" Style="{StaticResource MaterialDesignFlatButton}" Content="OK"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand"/>
+
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+    </Grid>
+</Window>

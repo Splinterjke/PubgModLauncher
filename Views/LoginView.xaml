@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="PubgMod.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:PubgMod.Behaviors"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converter="clr-namespace:PubgMod.Converters"
+             xmlns:mvm="clr-namespace:PubgMod.ViewModels"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d" 
+             d:DesignHeight="502.667" d:DesignWidth="793.409">
+    <UserControl.Resources>
+        <converter:BoolToEnableConverter x:Key="BoolToEnableConverter"/>
+    </UserControl.Resources>
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Text="PUBG" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="60" Foreground="#eeeeee" FontFamily="/PubgMod;component/Fonts/#Quiza Pro">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#BB009E97" ShadowDepth="3" BlurRadius="2" Direction="220"/>
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Margin="0,10,0,0" Text="Private Mod" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="54" Foreground="#eeeeee" FontFamily="/PubgMod;component/Fonts/#Quiza Pro">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#BB009E97" ShadowDepth="3" BlurRadius="2" Direction="220"/>
+                </TextBlock.Effect>
+            </TextBlock>
+        </StackPanel>
+
+        <StackPanel IsEnabled="{Binding IsProcessing, Converter={StaticResource BoolToEnableConverter}}" Grid.Row="1" Width="250" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <TextBox PreviewKeyDown="{s:Action KeyDown}" CaretBrush="#009E97" FontSize="15" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Foreground="#eeeeee" HorizontalContentAlignment="Center" md:HintAssist.Hint="{Binding LoginHint}"/>
+            <PasswordBox Margin="0,10,0,0" PreviewKeyDown="{s:Action KeyDown}" CaretBrush="White" FontSize="15" Background="Transparent" md:HintAssist.Hint="{Binding PasswordHint}" Foreground="#eeeeee" HorizontalContentAlignment="Center">
+                <i:Interaction.Behaviors>
+                    <behaviors:PasswordBehavior Password="{Binding Password}" />
+                </i:Interaction.Behaviors>
+            </PasswordBox>
+            <Label FontSize="12" Content="{Binding LostPasswordText}" HorizontalAlignment="Right" Cursor="Hand">
+                <Label.InputBindings>
+                    <MouseBinding Command="{s:Action OpenRecDialogCommand}" MouseAction="LeftClick" />
+                </Label.InputBindings>
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Foreground" Value="#009E97" />
+                        <Style.Triggers>                            
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#22BFB9" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>                    
+                </Label.Style>
+            </Label>
+            <Button Margin="0,10,0,0" Content="{Binding LoginButtonText}" Command="{s:Action LoginCommand}"/>
+            <Button Margin="0,10,0,0" Content="{Binding RegisterButtonText}" Command="{s:Action OpenRegDialogCommand}"/>
+        </StackPanel>
+        <md:DialogHost DialogClosing="{s:Action OnCloseRegisterDialog}" Margin="0,130,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" IsOpen="{Binding IsDialogOpen}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding RegisterButtonText}"/>
+                    <TextBox Margin="0 8 0 0" Text="{Binding Login}" HorizontalAlignment="Stretch" md:HintAssist.Hint="{Binding LoginHint}" HorizontalContentAlignment="Center"/>
+                    <PasswordBox Margin="0 8 0 0" HorizontalAlignment="Stretch" md:HintAssist.Hint="{Binding PasswordHint}" HorizontalContentAlignment="Center">
+                        <i:Interaction.Behaviors>
+                            <behaviors:PasswordBehavior Password="{Binding Password}" />
+                        </i:Interaction.Behaviors>
+                    </PasswordBox>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding AcceptRegText}"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>True</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding CancelRegText}"
+                                        IsCancel="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>False</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+        <md:DialogHost DialogClosing="{s:Action OnCloseRecoveryDialog}" Margin="0,130,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" IsOpen="{Binding IsRecoveryDialogOpen}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding RecoveryText}"/>
+                    <TextBox Margin="0 8 0 0" Text="{Binding Login}" HorizontalAlignment="Stretch" md:HintAssist.Hint="{Binding LoginHint}" HorizontalContentAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding AcceptRegText}"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>True</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Content="{Binding CancelRegText}"
+                                        IsCancel="True"
+                                        Margin="0 8 8 0"
+                                        Command="md:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean>False</system:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+    </Grid>
+</UserControl>
