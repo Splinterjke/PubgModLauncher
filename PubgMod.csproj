@@ -154,19 +154,19 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
-      <Version>1.6.2</Version>
+      <Version>2.0.0</Version>
     </PackageReference>
     <PackageReference Include="MaterialDesignThemes">
-      <Version>2.3.2-ci1036</Version>
+      <Version>2.4.0.1044</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAPICodePack.Shell">
       <Version>1.1.0</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.1</Version>
+      <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
-      <Version>2.2.9</Version>
+      <Version>2.5.4</Version>
     </PackageReference>
     <PackageReference Include="Stylet">
       <Version>1.1.21</Version>
@@ -190,62 +190,10 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Assests\Auth\login.png" />
-    <Resource Include="Assests\Auth\login_activ.png" />
-    <Resource Include="Assests\Auth\logo.png" />
-    <Resource Include="Assests\Auth\pass.png" />
-    <Resource Include="Assests\Auth\pass_activ.png" />
-    <Resource Include="Assests\Auth\regist.png" />
-    <Resource Include="Assests\Auth\regist_activ.png" />
-    <Resource Include="Assests\Auth\vhod.png" />
-    <Resource Include="Assests\Auth\vhod_activ.png" />
-    <Resource Include="Assests\Launcher\form_1.png" />
-    <Resource Include="Assests\Launcher\form_2.png" />
-    <Resource Include="Assests\Launcher\form_3.png" />
-    <Content Include="Assests\Launcher\launcher_background.mp4" />
-    <Resource Include="Assests\Launcher\link.png" />
-    <Resource Include="Assests\Launcher\link_button_0.png" />
-    <Resource Include="Assests\Launcher\link_button_1.png" />
-    <Resource Include="Assests\Launcher\link_button_2.png" />
-    <Resource Include="Assests\Launcher\o0.png" />
-    <Resource Include="Assests\Launcher\o1.png" />
-    <Resource Include="Assests\Launcher\o2.png" />
-    <Resource Include="Assests\Launcher\play 0.png" />
-    <Resource Include="Assests\Launcher\play 1.png" />
-    <Resource Include="Assests\Launcher\play 2.png" />
-    <Resource Include="Assests\Launcher\ReSh 0.png" />
-    <Resource Include="Assests\Launcher\ReSh 1.png" />
-    <Resource Include="Assests\Launcher\x0.png" />
-    <Resource Include="Assests\Launcher\x1.png" />
-    <Resource Include="Assests\Launcher\x2.png" />
-    <Resource Include="Assests\Main\BX\1.png" />
-    <Resource Include="Assests\Main\BX\2.png" />
-    <Resource Include="Assests\Main\BX\3.png" />
-    <Resource Include="Assests\Main\B_\1.png" />
-    <Resource Include="Assests\Main\B_\2.png" />
-    <Resource Include="Assests\Main\B_\3.png" />
-    <Content Include="Assests\Main\main_background.mp4">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assests\Main\start_logo.mp4" />
-    <Resource Include="Assests\PassRec\b1_0.png" />
-    <Resource Include="Assests\PassRec\b1_1.png" />
-    <Resource Include="Assests\PassRec\b1_2.png" />
-    <Resource Include="Assests\PassRec\email.png" />
-    <Resource Include="Assests\PassRec\form.png" />
-    <Resource Include="Assests\Reg\button_1_0.png" />
-    <Resource Include="Assests\Reg\button_1_1.png" />
-    <Resource Include="Assests\Reg\button_1_2.png" />
-    <Resource Include="Assests\Reg\button_2_0.png" />
-    <Resource Include="Assests\Reg\button_2_1.png" />
-    <Resource Include="Assests\Reg\button_2_2.png" />
-    <Resource Include="Assests\Reg\login.png" />
-    <Resource Include="Assests\Reg\pass.png" />
-    <Content Include="Assests\Reg\reg_background.mp4" />
-    <Content Include="Assests\Warnings\eng.mp4" />
-    <Content Include="Assests\Warnings\rus.mp4" />
+    <Resource Include="background_texture.png" />
+    <Resource Include="cancel_icon.png" />
+    <Resource Include="minimize_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

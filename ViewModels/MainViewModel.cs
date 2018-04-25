@@ -145,7 +145,7 @@ namespace PubgMod.ViewModels
             var settingsView = new SettingsViewModel();
             BottomSheetViewModel = new BottomSheetViewModel();
 
-            DisplayName = "PUBG MOD";
+            DisplayName = "PUBG MOD";            
             Items.Add(settingsView);
             Items.Add(loginView);
         }
@@ -181,9 +181,9 @@ namespace PubgMod.ViewModels
                 }
                 if (AppSettings.Apphash.ToUpper() != sha1)
                 {
-                   UpdateIsReady = true;
-                   IsUpdateDialogOpen = true;
-                   return;
+                    UpdateIsReady = true;
+                    IsUpdateDialogOpen = true;
+                    return;
                 }
                 if (Properties.Settings.Default.apphash != sha1)
                 {

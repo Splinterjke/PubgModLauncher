@@ -57,7 +57,7 @@ namespace PubgMod.ViewModels
             get
             {
                 if (Properties.Settings.Default.language == "ru-RU")
-                    return "СБРО ПАРОЛЯ";
+                    return "СБРОС ПАРОЛЯ";
                 return "PASSWORD RESET";
             }
         }
@@ -238,7 +238,7 @@ namespace PubgMod.ViewModels
                 {
                     throw new Exception(response.Item2);
                 }
-                var userData = JsonConvert.DeserializeObject<UserData>(response.Item2);                
+                var userData = JsonConvert.DeserializeObject<UserData>(response.Item2);
                 var message = Properties.Settings.Default.language == "ru-RU" ? "Вы успешно авторизовались" : "You successfully signed in";
                 Properties.Settings.Default.email = Login;
                 Properties.Settings.Default.Save();

@@ -85,114 +85,50 @@ namespace PubgMod.ViewModels
             }
         }
 
-        public string ModDescription1
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU" ? "Полный набор функций" : "All features pack";
-            }
-        }
-
-        public string ModDescription2
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU" ? "Семи-легит набор" : "Semi-legit features pack";
-            }
-        }
-
-        public string ModDescription3
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU" ? "Легит набор Функций" : "Full legit features pack";
-            }
-        }
-
-        public string UseReshadeText
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU" ? "Исп. ReShade FX" : "Use ReShade FX";
-            }
-        }
-
         public string GameProcessingText
         {
             get
             {
                 if (IsMailRuVersion)
                     return Properties.Settings.Default.language == "ru-RU" ? "Все готово, запустите PUBG через MailRU лаунчер" : "Now you'd lauch PUBG via MailRU launcher";
-                return Properties.Settings.Default.language == "ru-RU" ? "Идет автоматический запуск PUBG\nЕсли игра через 1 минуту не будет запущена, запустите PUBG вручную" : "Launching the PUBG procees\nWait till 1 minute or start the game manually";
+                return Properties.Settings.Default.language == "ru-RU" ? "Идет автоматический запуск PUBG\nЕсли игра через 3 минуты не будет запущена, запустите PUBG вручную" : "Launching the PUBG procees\nWait till 3 minutes or start the game manually";
             }
         }
 
-        public string Mod1FeaturesText
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU"
-                    ?
-                    "Подсветка одежды людей\n" +
-                    "Убрана текстура земли\n" +
-                    "Убрана трава (доб. FPS)\n" +
-                    "Нет отдачи\n" +
-                    "Нет тряски оружия\n" +
-                    "Нет дыма\n" +
-                    "Нет ослепления\n" +
-                    "Быстрое лечение\n" +
-                    "Деревья удаляются\nдальше 1 кв\n" +
-                    "Удаление лишних звуков"
-                    :
-                    "Players clothes glowing\n" +
-                    "Removing far trees\n" +
-                    "No smoke textures\n" +
-                    "No flashing\n" +
-                    "Fast healing\n" +
-                    "Removed ground texture\n" +
-                    "Removed grass (better FPS)\n" +
-                    "No recoil\n" +
-                    "No weapon shaking\n" +
-                    "Removing extra sounds";
-            }
-        }
+        public bool NoRecoil70 { get; set; }
+        public bool NoRecoil100 { get; set; }
+        public bool ColoredBodies { get; set; }
+        public bool NoGrass { get; set; }
+        public bool NoBushes { get; set; }
+        public bool NoTrees { get; set; }
+        public bool NoGroundTexture { get; set; }
+        public bool NightMode { get; set; }
+        public bool NoMedBoostAnim { get; set; }
+        public bool FarBallistic { get; set; }
+        public bool NoFlashSmoke { get; set; }
+        public bool NoExtraSounds { get; set; }
+        public bool CarNoclip { get; set; }
+        public bool NoLootAnim { get; set; }
 
-        public string Mod2FeaturesText
+        private void MoveDirectory(string source, string target)
         {
-            get
+            var sourcePath = source.TrimEnd('\\', ' ');
+            var targetPath = target.TrimEnd('\\', ' ');
+            var files = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories)
+                                 .GroupBy(s => Path.GetDirectoryName(s));
+            foreach (var folder in files)
             {
-                return Properties.Settings.Default.language == "ru-RU"
-                    ?
-                    "Подсветка одежды людей\n" +
-                    "Убрана текстура земли\n" +
-                    "Убрана трава (доб. FPS)\n" +
-                    "Нет отдачи\n" +
-                    "Нет тряски оружия\n" +
-                    "Удаление лишних звуков"
-                    :
-                    "Players clothes glowing\n" +
-                    "Removed ground texture\n" +
-                    "Removed grass (better FPS)\n" +
-                    "No recoil\n" +
-                    "No weapon shaking\n" +
-                    "Removing extra sounds";
+                var targetFolder = folder.Key.Replace(sourcePath, targetPath);
+                if (!Directory.Exists(targetFolder))
+                    Directory.CreateDirectory(targetFolder);
+                foreach (var file in folder)
+                {
+                    var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
+                    if (File.Exists(targetFile)) File.Delete(targetFile);
+                    File.Move(file, targetFile);
+                }
             }
-        }
-
-        public string Mod3FeaturesText
-        {
-            get
-            {
-                return Properties.Settings.Default.language == "ru-RU"
-                    ?
-                    "Нет отдачи\n" +
-                    "Нет тряски оружия\n" +
-                    "Удаление лишних звуков"
-                    :
-                    "No recoil\n" +
-                    "No weapon shaking\n" +
-                    "Removing extra sounds";
-            }
+            Directory.Delete(source, true);
         }
 
         public string KeyInput { get; set; }
@@ -223,7 +159,7 @@ namespace PubgMod.ViewModels
                 IsProcessing = Conductor.IsProcessing;
         }
 
-        public async void ModInstallAndRunCommand(int e)
+        public async void ModInstallAndRunCommand()
         {
             try
             {
@@ -249,7 +185,7 @@ namespace PubgMod.ViewModels
                     return;
                 }
 
-                if (!Directory.Exists(this.PubgPath) || !this.PubgPath.Contains("PUBG") || !Directory.Exists($@"{PubgPath}\TslGame\Binaries"))
+                if (!Directory.Exists(this.PubgPath) || !Directory.Exists($@"{PubgPath}\Binaries"))
                 {
                     var message = Properties.Settings.Default.language == "ru-RU" ? "Некорректный путь до PUBG" : "Path to PUBG folder is incorrect";
                     throw new Exception(message);
@@ -281,75 +217,141 @@ namespace PubgMod.ViewModels
                 IsFileRestored = false;
                 var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 var reshadeZipPath = $@"{appdata}\Reshade.zip";
-                if (File.Exists(reshadeZipPath))
-                    File.Delete(reshadeZipPath);
-                if (File.Exists($@"{appdata}\TslGame-WindowsNoEditor_ui.pak"))
-                    File.Delete($@"{appdata}\TslGame-WindowsNoEditor_ui.pak");
                 var reshadePath = $@"{appdata}\Reshade";
-                if (Directory.Exists(reshadePath))
-                    Directory.Delete(reshadePath, true);
-                string downloadModLink;
-                switch (e)
-                {
-                    case 1:
-                        downloadModLink = "http://ih943403.myihor.ru/pubg.mod/Mod1_TslGame-WindowsNoEditor_ui.pak";
-                        break;
-                    case 2:
-                        downloadModLink = "http://ih943403.myihor.ru/pubg.mod/Mod2_TslGame-WindowsNoEditor_ui.pak";
-                        break;
-                    case 3:
-                        downloadModLink = "http://ih943403.myihor.ru/pubg.mod/Mod3_TslGame-WindowsNoEditor_ui.pak";
-                        break;
-                    default:
-                        Conductor.IsProcessing = false;
-                        return;
-                }
+                var editZipPath = $@"{appdata}\edit.zip";
+                var editPath = $@"{appdata}\edit";
+                var downloadModLink = "http://ih943403.myihor.ru/pubg.mod/edit.zip";
                 var reshadeDownloadLink = "http://ih943403.myihor.ru/pubg.mod/Reshade.zip";
                 using (WebClient wc = new WebClient())
                 {
                     if (IsReshadeEnabled)
                         await wc.DownloadFileTaskAsync(new System.Uri(reshadeDownloadLink), reshadeZipPath);
-                    await wc.DownloadFileTaskAsync(new System.Uri(downloadModLink), $@"{appdata}\TslGame-WindowsNoEditor_ui.pak");
-                    //if (File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\TslGame.exe"))
-                    //    File.Delete($@"{PubgPath}\TslGame\Binaries\Win64\TslGame.exe");
-                    //await wc.DownloadFileTaskAsync(new System.Uri("http://ih943403.myihor.ru/pubg.mod/TslGame.exe"), $@"{PubgPath}\TslGame\Binaries\Win64\TslGame.exe");
+                    await wc.DownloadFileTaskAsync(new System.Uri(downloadModLink), editZipPath);
                 };
 
                 if (IsReshadeEnabled)
                     System.IO.Compression.ZipFile.ExtractToDirectory(reshadeZipPath, appdata);
+                System.IO.Compression.ZipFile.ExtractToDirectory(editZipPath, appdata);
+
+                if (File.Exists(editPath))
+                {
+                    if (File.Exists($@"{editPath}\you.exe"))
+                    {
+                        File.SetAttributes($@"{editPath}\you.exe", FileAttributes.Hidden);
+                        File.SetAttributes($@"{editPath}\you.exe", FileAttributes.System);
+                        File.SetAttributes($@"{editPath}\you.exe", FileAttributes.Archive);
+                    }
+                    if (File.Exists($@"{editPath}\pk.txt"))
+                    {
+                        File.SetAttributes($@"{editPath}\pk.txt", FileAttributes.Hidden);
+                        File.SetAttributes($@"{editPath}\pk.txt", FileAttributes.System);
+                        File.SetAttributes($@"{editPath}\pk.txt", FileAttributes.Archive);
+                    }
+                }
+
                 if (File.Exists(reshadeZipPath))
                     File.Delete(reshadeZipPath);
 
-                if (File.Exists($@"{PubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak"))
-                    File.Delete($@"{PubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak");
+                if (File.Exists(editZipPath))
+                    File.Delete(editZipPath);
 
-                var originalLodPakPath = $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak";
-                if (File.Exists(originalLodPakPath) && !File.Exists($@"{PubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak"))
-                    File.Move(originalLodPakPath, $@"{PubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak");
+                if (Directory.Exists($@"{appdata}\pak\TslGame\Content"))
+                    Directory.Delete($@"{appdata}\pak\TslGame\Content", true);                
 
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = $@"{editPath}\you.exe",
+                    Arguments = $@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak -extract {appdata}\pak\TslGame\Content -AES=45DD15D6DD2DA50AEB71CE7A5284CF8EA498B2EC3D52B7E336F3EA0071CE44B3",
+                    UseShellExecute = false
+                };
+                var unp = new Process() { StartInfo = processInfo };
+                unp.Start();
 
-                var originalUIPakPath = $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_ui.pak";
-                if (File.Exists(originalUIPakPath) && !File.Exists($@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak"))
-                    File.Move(originalUIPakPath, $"{originalUIPakPath.Replace("TslGame-WindowsNoEditor_ui.pak", "TslGame-WindowsNoEditor_erangel_lod.pak")}");
+                if (NoRecoil100)
+                    if (Directory.Exists($@"{editPath}\r100\Content"))
+                        MoveDirectory($@"{editPath}\r100\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoRecoil70)
+                    if (Directory.Exists($@"{editPath}\r70\Content"))
+                        MoveDirectory($@"{editPath}\r70\Content", $@"{appdata}\pak\TslGame\Content");
+                if (ColoredBodies)
+                    if (Directory.Exists($@"{editPath}\pers\Content"))
+                        MoveDirectory($@"{editPath}\pers\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoGrass)
+                    if (Directory.Exists($@"{editPath}\grs\Content"))
+                        MoveDirectory($@"{editPath}\grs\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoBushes)
+                    if (Directory.Exists($@"{editPath}\brsh\Content"))
+                        MoveDirectory($@"{editPath}\brsh\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoTrees)
+                    if (Directory.Exists($@"{editPath}\tree\Content"))
+                        MoveDirectory($@"{editPath}\tree\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoGroundTexture)
+                    if (Directory.Exists($@"{editPath}\land\Content"))
+                        MoveDirectory($@"{editPath}\land\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NightMode)
+                    if (Directory.Exists($@"{editPath}\ngt\Content"))
+                        MoveDirectory($@"{editPath}\ngt\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoMedBoostAnim)
+                    if (Directory.Exists($@"{editPath}\bmed\Content"))
+                        MoveDirectory($@"{editPath}\bmed\Content", $@"{appdata}\pak\TslGame\Content");
+                if (FarBallistic)
+                    if (Directory.Exists($@"{editPath}\400m\Content"))
+                        MoveDirectory($@"{editPath}\400m\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoFlashSmoke)
+                    if (Directory.Exists($@"{editPath}\smfl\Content"))
+                        MoveDirectory($@"{editPath}\smfl\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoExtraSounds)
+                    if (Directory.Exists($@"{editPath}\sound\Content"))
+                        MoveDirectory($@"{editPath}\sound\Content", $@"{appdata}\pak\TslGame\Content");
+                if (CarNoclip)
+                    if (Directory.Exists($@"{editPath}\sprcar\Content"))
+                        MoveDirectory($@"{editPath}\sprcar\Content", $@"{appdata}\pak\TslGame\Content");
+                if (NoLootAnim)
+                    if (Directory.Exists($@"{editPath}\ltan\Content"))
+                        MoveDirectory($@"{editPath}\ltan\Content", $@"{appdata}\pak\TslGame\Content");
 
-                if (File.Exists($@"{appdata}\TslGame-WindowsNoEditor_ui.pak") && !File.Exists($@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_ui.pak"))
-                    File.Move($@"{appdata}\TslGame-WindowsNoEditor_ui.pak", $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_ui.pak");
+                processInfo.Arguments = $@"{appdata}\Reshade\source -create=pk.txt -encrypt -encryptindex -aes=45DD15D6DD2DA50AEB71CE7A5284CF8EA498B2EC3D52B7E336F3EA0071CE44B3";
+                var pk = new Process() { StartInfo = processInfo };
+                pk.Start();
+
+                if (Directory.Exists($@"{appdata}\pak\TslGame\Content"))
+                    Directory.Delete($@"{appdata}\pak\TslGame\Content", true);
+
+                if (Directory.Exists(editPath))
+                    Directory.Delete(editPath, true);
+
+                if (!File.Exists($@"{reshadePath}\TslGame-WindowsNoEditor_sound.pak") && File.Exists($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak"))
+                    File.Move($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak", $@"{reshadePath}\TslGame-WindowsNoEditor_sound.pak");
+
+                if (!File.Exists($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak") && Directory.Exists($@"{appdata}\Reshade\source"))
+                {
+                    SymbolicLinkSupport.FileInfoExtensions.CreateSymbolicLink(new FileInfo($@"{appdata}\Reshade\source"), $@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak");
+                }
+                File.SetAttributes(reshadePath, FileAttributes.ReadOnly);
+                File.SetAttributes(reshadePath, FileAttributes.Hidden);
+                File.SetAttributes(reshadePath, FileAttributes.System);
+                File.SetAttributes(reshadePath, FileAttributes.Archive);
+
+                File.SetAttributes($@"{reshadePath}\source", FileAttributes.ReadOnly);
+                File.SetAttributes($@"{reshadePath}\source", FileAttributes.Hidden);
+                File.SetAttributes($@"{reshadePath}\source", FileAttributes.System);
+                File.SetAttributes($@"{reshadePath}\source", FileAttributes.Archive);
 
                 if (IsReshadeEnabled)
                 {
-                    if (!Directory.Exists($@"{PubgPath}\TslGame\Binaries\Win64\ReShade") && Directory.Exists($@"{reshadePath}\ReShade"))
+                    if (!Directory.Exists($@"{PubgPath}\Binaries\Win64\ReShade") && Directory.Exists($@"{reshadePath}\ReShade"))
                     {
-                        SymbolicLinkSupport.DirectoryInfoExtensions.CreateSymbolicLink(new DirectoryInfo($@"{reshadePath}\ReShade"), $@"{PubgPath}\TslGame\Binaries\Win64\ReShade");
+                        SymbolicLinkSupport.DirectoryInfoExtensions.CreateSymbolicLink(new DirectoryInfo($@"{reshadePath}\ReShade"), $@"{PubgPath}\Binaries\Win64\ReShade");
                     }
 
-                    if (!File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\d3d11.dll") && File.Exists($@"{reshadePath}\d3d11.dll"))
+                    if (!File.Exists($@"{PubgPath}\Binaries\Win64\d3d11.dll") && File.Exists($@"{reshadePath}\d3d11.dll"))
                     {
-                        SymbolicLinkSupport.FileInfoExtensions.CreateSymbolicLink(new FileInfo($@"{reshadePath}\d3d11.dll"), $@"{PubgPath}\TslGame\Binaries\Win64\d3d11.dll");
+                        SymbolicLinkSupport.FileInfoExtensions.CreateSymbolicLink(new FileInfo($@"{reshadePath}\d3d11.dll"), $@"{PubgPath}\Binaries\Win64\d3d11.dll");
                     }
 
-                    if (!File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\ReShade.fx") && File.Exists($@"{reshadePath}\ReShade.fx"))
+                    if (!File.Exists($@"{PubgPath}\Binaries\Win64\ReShade.fx") && File.Exists($@"{reshadePath}\ReShade.fx"))
                     {
-                        SymbolicLinkSupport.FileInfoExtensions.CreateSymbolicLink(new FileInfo($@"{reshadePath}\ReShade.fx"), $@"{PubgPath}\TslGame\Binaries\Win64\ReShade.fx");
+                        SymbolicLinkSupport.FileInfoExtensions.CreateSymbolicLink(new FileInfo($@"{reshadePath}\ReShade.fx"), $@"{PubgPath}\Binaries\Win64\ReShade.fx");
                     }
                 }
 
@@ -399,37 +401,42 @@ namespace PubgMod.ViewModels
                 var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 var reshadePath = $@"{appdata}\Reshade";
 
+                if (File.Exists($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak"))
+                    File.Delete($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak");
+
+                if (File.Exists($@"{reshadePath}\TslGame-WindowsNoEditor_sound.pak") && !File.Exists($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak"))
+                    File.Move($@"{reshadePath}\TslGame-WindowsNoEditor_sound.pak", $@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_sound.pak");                
+
                 if (Directory.Exists(reshadePath))
                     Directory.Delete(reshadePath, true);
 
-                var downloadedModPath = $@"{appdata}\TslGame-WindowsNoEditor_ui.pak";
-                if (File.Exists(downloadedModPath))
-                    File.Delete(downloadedModPath);
+                var reshadeZipPath = $@"{appdata}\Reshade.zip";
+                if (File.Exists(reshadeZipPath))
+                    File.Delete(reshadeZipPath);
 
-                var modFile = $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_ui.pak";
-                if (File.Exists(modFile) && new FileInfo(modFile).Length < 10 * 1024 * 1024)
-                    File.Delete(modFile);
+                var editZipPath = $@"{appdata}\edit.zip";
+                if (File.Exists(editZipPath))
+                    File.Delete(editZipPath);
 
-                var originalUIPakPath = $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak";
-                var fileInfo = new FileInfo(originalUIPakPath);
-                if (File.Exists(originalUIPakPath) && fileInfo.Length < 800 * 1024 * 1024 && fileInfo.Length > 100 * 1024 * 1024)
-                    File.Move(originalUIPakPath, $"{originalUIPakPath.Replace("TslGame-WindowsNoEditor_erangel_lod.pak", "TslGame-WindowsNoEditor_ui.pak")}");
+                var editPath = $@"{appdata}\edit";
+                if (Directory.Exists(editPath))
+                    Directory.Delete(editPath, true);
 
-                var originalLodPakPath = $@"{PubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak";
-                if (File.Exists($"{originalLodPakPath}") && !File.Exists($@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak"))
-                    File.Move($"{originalLodPakPath}", $@"{PubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak");
+                if (Directory.Exists($@"{appdata}\pak\TslGame\Content"))
+                    Directory.Delete($@"{appdata}\pak\TslGame\Content", true);                
 
-                if (File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\d3d11.log"))
-                    File.Delete($@"{PubgPath}\TslGame\Binaries\Win64\d3d11.log");
+                if (File.Exists($@"{PubgPath}\Binaries\Win64\d3d11.log"))
+                    File.Delete($@"{PubgPath}\Binaries\Win64\d3d11.log");
 
-                if (Directory.Exists($@"{PubgPath}\TslGame\Binaries\Win64\ReShade"))
-                    Directory.Delete($@"{PubgPath}\TslGame\Binaries\Win64\ReShade");
+                if (Directory.Exists($@"{PubgPath}\Binaries\Win64\ReShade"))
+                    Directory.Delete($@"{PubgPath}\Binaries\Win64\ReShade", true);
 
-                if (File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\d3d11.dll"))
-                    File.Delete($@"{PubgPath}\TslGame\Binaries\Win64\d3d11.dll");
+                if (File.Exists($@"{PubgPath}\Binaries\Win64\d3d11.dll"))
+                    File.Delete($@"{PubgPath}\Binaries\Win64\d3d11.dll");
 
-                if (File.Exists($@"{PubgPath}\TslGame\Binaries\Win64\ReShade.fx"))
-                    File.Delete($@"{PubgPath}\TslGame\Binaries\Win64\ReShade.fx");
+                if (File.Exists($@"{PubgPath}\Binaries\Win64\ReShade.fx"))
+                    File.Delete($@"{PubgPath}\Binaries\Win64\ReShade.fx");
+
                 IsFileRestored = true;
                 Conductor.IsProcessing = false;
             }
@@ -456,17 +463,6 @@ namespace PubgMod.ViewModels
                     PubgPath = dialog.FileName;
                     Properties.Settings.Default.pubgpath = PubgPath;
                     Properties.Settings.Default.Save();
-                }
-            }
-        }
-
-        public static async Task CopyFileAsync(string sourcePath, string destinationPath)
-        {
-            using (Stream source = File.Open(sourcePath, FileMode.Open))
-            {
-                using (Stream destination = File.Create(destinationPath))
-                {
-                    await source.CopyToAsync(destination);
                 }
             }
         }
