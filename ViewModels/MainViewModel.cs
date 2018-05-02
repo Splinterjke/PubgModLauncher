@@ -42,28 +42,7 @@ namespace PubgMod.ViewModels
         public static bool IsExitRequested;
         public bool IsExitDialogOpen { get; set; }
         public bool IsUpdateDialogOpen { get; set; }
-        public bool IsChangelogDialogOpen { get; set; }
         public string ProcessingText { get; set; } = "Загрузка";
-
-        public string ChangelogTitleText
-        {
-            get
-            {
-                if (Properties.Settings.Default.language == "ru-RU")
-                    return "ЧТО НОВОГО:";
-                return "CHANGELOG:";
-            }
-        }
-
-        public string ChangelogText
-        {
-            get
-            {
-                if (Properties.Settings.Default.language == "ru-RU")
-                    return "- Исправлена ошибка проверки HWID (снова)";
-                return "- Fixed HWID validation (again)";
-            }
-        }
 
         public string OnExitText
         {
@@ -122,6 +101,8 @@ namespace PubgMod.ViewModels
         }
 
         private bool isProcessing;
+        private readonly IWindowManager windowManager;
+
         public bool IsProcessing
         {
             get { return this.isProcessing; }
@@ -131,7 +112,7 @@ namespace PubgMod.ViewModels
         public bool IsAppFrozen { get; set; }
         public bool UpdateIsReady { get; set; }
 
-        public MainViewModel()
+        public MainViewModel(IWindowManager windowManager)
         {
             if (string.IsNullOrEmpty(Properties.Settings.Default.language))
             {
@@ -142,12 +123,13 @@ namespace PubgMod.ViewModels
             }
 
             var loginView = new LoginViewModel();
-            var settingsView = new SettingsViewModel();
+            var settingsView = new SettingsViewModel(windowManager);
             BottomSheetViewModel = new BottomSheetViewModel();
 
             DisplayName = "PUBG MOD";            
             Items.Add(settingsView);
             Items.Add(loginView);
+            this.windowManager = windowManager;
         }
 
         protected override async void OnViewLoaded()
@@ -187,7 +169,6 @@ namespace PubgMod.ViewModels
                 }
                 if (Properties.Settings.Default.apphash != sha1)
                 {
-                    IsChangelogDialogOpen = true;
                     Properties.Settings.Default.apphash = sha1;
                     Properties.Settings.Default.Save();
                 }

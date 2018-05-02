@@ -20,7 +20,7 @@ namespace PubgMod.ViewModels
     {
         #region Properties
         public string Login { get; set; } = string.IsNullOrEmpty(Properties.Settings.Default.email) ? string.Empty : Properties.Settings.Default.email;
-        public SecureString Password { get; set; }
+        public SecureString Password { get; set; } = string.IsNullOrEmpty(Properties.Settings.Default.pwd) ? null : new System.Net.NetworkCredential("", Properties.Settings.Default.pwd).SecurePassword;
 
         public string LoginButtonText
         {
@@ -123,6 +123,8 @@ namespace PubgMod.ViewModels
             base.OnActivate();
             Conductor = (this.Parent as MainViewModel);
             Conductor.PropertyChanged += Conductor_PropertyChanged;
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.pwd) && !string.IsNullOrEmpty(Properties.Settings.Default.email))
+                LoginCommand();
         }
 
         private void Conductor_PropertyChanged(object sender, PropertyChangedEventArgs e)

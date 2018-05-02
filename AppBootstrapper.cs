@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Threading;
 using System.IO;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace PubgMod
 {
@@ -13,13 +14,13 @@ namespace PubgMod
     {
         protected override void OnStart()
         {
-            
+
         }
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
-           // Bind your own types. Concrete types are automatically self - bound.
-           builder.Bind(typeof(ITabItem)).ToAllImplementations();
+            // Bind your own types. Concrete types are automatically self - bound.
+            builder.Bind(typeof(ITabItem)).ToAllImplementations();
         }
 
         protected override void Configure()
@@ -31,49 +32,104 @@ namespace PubgMod
 
         protected override void OnLaunch()
         {
-            // This is called just after the root ViewModel has been launched
-            // Something like a version check that displays a dialog might be launched from here
+
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             if (SettingsViewModel.IsFileRestored) return;
-            
-            var pubgPath = Properties.Settings.Default.pubgpath;
+
+            var PubgPath = Properties.Settings.Default.pubgpath;
             var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var reshadePath = $@"{appdata}\Reshade";
+
+            if (File.Exists($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_xmod.pak"))
+                File.Delete($@"{PubgPath}\Content\Paks\TslGame-WindowsNoEditor_xmod.pak");
 
             if (Directory.Exists(reshadePath))
                 Directory.Delete(reshadePath, true);
 
-            var downloadedModPath = $@"{appdata}\TslGame-WindowsNoEditor_ui.pak";
-            if (File.Exists(downloadedModPath))
-                File.Delete(downloadedModPath);
+            var reshadeZipPath = $@"{appdata}\Reshade.zip";
+            if (File.Exists(reshadeZipPath))
+                File.Delete(reshadeZipPath);
 
-            var modFile = $@"{pubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_ui.pak";
-            if (File.Exists(modFile) && new FileInfo(modFile).Length < 10 * 1024 * 1024)
-                File.Delete(modFile);
+            var editZipPath = $@"{appdata}\edit.zip";
+            if (File.Exists(editZipPath))
+                File.Delete(editZipPath);
 
-            var originalUIPakPath = $@"{pubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak";
-            var fileInfo = new FileInfo(originalUIPakPath);
-            if (File.Exists(originalUIPakPath) && fileInfo.Length < 800 * 1024 * 1024 && fileInfo.Length > 100 * 1024 * 1024)
-                File.Move(originalUIPakPath, $"{originalUIPakPath.Replace("TslGame-WindowsNoEditor_erangel_lod.pak", "TslGame-WindowsNoEditor_ui.pak")}");
+            var driverZipPath = $@"{appdata}\Kernel.zip";
+            if (File.Exists(driverZipPath))
+                File.Delete(driverZipPath);
 
-            var originalLodPakPath = $@"{pubgPath}\TslGame\Content\TslGame-WindowsNoEditor_erangel_lod.pak";
-            if (File.Exists($"{originalLodPakPath}") && !File.Exists($@"{pubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak"))
-                File.Move($"{originalLodPakPath}", $@"{pubgPath}\TslGame\Content\Paks\TslGame-WindowsNoEditor_erangel_lod.pak");
 
-            if (Directory.Exists($@"{pubgPath}\TslGame\Binaries\Win64\ReShade"))
-                Directory.Delete($@"{pubgPath}\TslGame\Binaries\Win64\ReShade");
+            var hiddenDriverPath = $@"{appdata}\kernel";
+            if (Directory.Exists(hiddenDriverPath) && File.Exists($@"{hiddenDriverPath}\kernel.exe"))
+            {
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = $@"{hiddenDriverPath}\kernel.exe",
+                    Arguments = "/unhide file all",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+                var kernel = new Process() { StartInfo = processInfo };
+                kernel.Start();
+                kernel.WaitForExit();
+            }
 
-            if (File.Exists($@"{pubgPath}\TslGame\Binaries\Win64\d3d11.dll"))
-                File.Delete($@"{pubgPath}\TslGame\Binaries\Win64\d3d11.dll");
+            var serviceInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c sc stop mobanche",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            var serviceStop = new Process() { StartInfo = serviceInfo };
+            serviceStop.Start();
+            serviceStop.WaitForExit();
 
-            if (File.Exists($@"{pubgPath}\TslGame\Binaries\Win64\ReShade.fx"))
-                File.Delete($@"{pubgPath}\TslGame\Binaries\Win64\ReShade.fx");
+            //if (File.Exists($@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\System32\Drivers\mobanche.sys"))
+            //    File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\System32\Drivers\mobanche.sys");
 
-            if (File.Exists($@"{pubgPath}\TslGame\Binaries\Win64\d3d11.log"))
-                File.Delete($@"{pubgPath}\TslGame\Binaries\Win64\d3d11.log");
+            var systemDrive = Path.GetPathRoot(Environment.SystemDirectory);
+            var editPath = $@"{systemDrive}\edit";
+            if (Directory.Exists(editPath))
+                Directory.Delete(editPath, true);
+
+            var kernelPath = $@"{appdata}\kernel";
+            if (Directory.Exists(kernelPath))
+                Directory.Delete(kernelPath, true);
+
+            if (Directory.Exists($@"{systemDrive}\pak\"))
+                Directory.Delete($@"{systemDrive}\pak\", true);
+
+            if (File.Exists($@"{PubgPath}\Binaries\Win64\d3d11.log"))
+                File.Delete($@"{PubgPath}\Binaries\Win64\d3d11.log");
+
+            if (Directory.Exists($@"{PubgPath}\Binaries\Win64\ReShade"))
+                Directory.Delete($@"{PubgPath}\Binaries\Win64\ReShade", true);
+
+            if (File.Exists($@"{PubgPath}\Binaries\Win64\d3d11.dll"))
+                File.Delete($@"{PubgPath}\Binaries\Win64\d3d11.dll");
+
+            if (File.Exists($@"{PubgPath}\Binaries\Win64\ReShade.fx"))
+                File.Delete($@"{PubgPath}\Binaries\Win64\ReShade.fx");
+
+            if (Directory.Exists($@"{systemDrive}\Engine"))
+                Directory.Delete($@"{systemDrive}\Engine", true);
+
+            var processKillInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c taskkill /f /im kernel.exe",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            var kernelKill = new Process() { StartInfo = processKillInfo };
+            kernelKill.Start();
         }
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)

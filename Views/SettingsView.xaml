@@ -53,13 +53,19 @@
                 </TextBlock.InputBindings>
             </TextBlock>
         </StackPanel>
-        <StackPanel Visibility="{Binding UserData.IsSubscriber, Converter={StaticResource BoolToVisibilityConverter}}" Margin="10,4,0,0" Grid.ColumnSpan="4" Grid.Row="0" Orientation="Horizontal">
+        
+        <StackPanel HorizontalAlignment="Left" Visibility="{Binding UserData.IsSubscriber, Converter={StaticResource BoolToVisibilityConverter}}" Margin="8,4,0,0" Grid.ColumnSpan="4" Grid.Row="0" Orientation="Horizontal">
             <TextBlock Text="{Binding SubTimeText}" FontSize="12" Foreground="#eeeeee"/>
             <TextBlock Margin="10,0,0,0" Text="{Binding SubTimeDate}" FontSize="12" Foreground="#eeeeee"/>
         </StackPanel>
+        <TextBlock HorizontalAlignment="Left" Margin="8,22,0,0" Grid.ColumnSpan="4" Grid.Row="0" Text="{Binding LogoutText}" FontSize="12" Foreground="#eeeeee" Cursor="Hand">
+            <TextBlock.InputBindings>
+                <MouseBinding Command="{s:Action LogoutCommand}" MouseAction="LeftClick" />
+            </TextBlock.InputBindings>
+        </TextBlock>
 
 
-        <StackPanel Margin="0,50,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+        <StackPanel Margin="0,30,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton IsChecked="{Binding NoRecoil70}" Style="{StaticResource ToggleOptionStyle}"/>
                 <TextBlock Text="NoRecoil 70%" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
@@ -80,7 +86,7 @@
                 <TextBlock Text="No grass" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Margin="0,50,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1">
+        <StackPanel Margin="0,30,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton IsChecked="{Binding NoBushes}" Style="{StaticResource ToggleOptionStyle}"/>
                 <TextBlock Text="No bushes" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
@@ -101,7 +107,7 @@
                 <TextBlock Text="Night mode" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Margin="0,50,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="2">
+        <StackPanel Margin="0,30,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton Style="{StaticResource ToggleOptionStyle}" IsChecked="{Binding NoMedBoostAnim}" />
                 <TextBlock Text="No medkit/booster anim." Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
@@ -122,7 +128,7 @@
                 <TextBlock Text="No extra sounds" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Margin="0,50,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="3">
+        <StackPanel Margin="0,30,0,0" Orientation="Vertical" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="3">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton IsChecked="{Binding CarNoclip}" Style="{StaticResource ToggleOptionStyle}"/>
                 <TextBlock Text="Cars noclip" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
@@ -137,13 +143,51 @@
                 <ToggleButton Style="{DynamicResource ToggleOptionStyle}" IsChecked="{Binding IsReshadeEnabled}" />
                 <TextBlock Text="Reshade FX" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
             </StackPanel>
+            
+            <StackPanel Margin="0,30,0,0" Orientation="Horizontal">
+                <ToggleButton Style="{DynamicResource ToggleOptionStyle}" IsChecked="{Binding TestFeature}" />
+                <TextBlock Text="Test" Margin="14,0,0,0" FontSize="16" Foreground="#eeeeee"/>
+            </StackPanel>
         </StackPanel>
 
-        
+        <Button Command="{s:Action ModInstallAndRunCommand}" Margin="0,0,0,110" Width="160" Height="40" Grid.Row="1" Background="#11FFFFFF" Grid.ColumnSpan="4" Content="START" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Grid>
+                                    <Border Background="{TemplateBinding Background}" x:Name="border" CornerRadius="2"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                        <md:Ripple Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Focusable="False"    
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Padding="{TemplateBinding Padding}" 
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsDefaulted" Value="true">
+                                        <!--Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/-->
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource MaterialDesignFlatButtonClick}" />
+                                        <Setter Property="Background" TargetName="border" Value="#22FFFFFF" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Opacity" Value="0.23"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>                    
+                </Style>
+            </Button.Style>
+        </Button>
 
         <md:Card Grid.Row="1" Grid.ColumnSpan="4" Margin="10,0,10,20" md:ShadowAssist.ShadowDepth="Depth4" HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="#FF314853">
             <StackPanel Orientation="Horizontal" Margin="8">
-                <TextBox Text="{Binding PubgPath}" md:HintAssist.Hint="Путь до PUBG" CaretBrush="#009E97" Foreground="#eeeeee" FontSize="16" Width="400" md:HintAssist.IsFloating="True" IsReadOnly="True"/>
+                <TextBox Text="{Binding PubgPath}" md:HintAssist.Hint="Путь до TslGame" CaretBrush="#009E97" Foreground="#eeeeee" FontSize="16" Width="400" md:HintAssist.IsFloating="True" IsReadOnly="True"/>
                 <Button Margin="14,0,0,0" Style="{DynamicResource MaterialDesignFloatingActionAccentButton}" Width="36" Height="36" Command="{s:Action SelectSteamFolderCommand}">
                     <md:PackIcon Kind="Folder" Height="20" Width="20" />
                 </Button>
@@ -173,7 +217,7 @@
                                 </MouseBinding>
                             </TextBlock.InputBindings>
                         </TextBlock>
-                        <TextBlock Margin="15,0,0,0" HorizontalAlignment="Center" Text="DISCORD INVITE #3" FontSize="15" Cursor="Hand" TextDecorations="Underline">
+                        <TextBlock Margin="15,0,0,0" HorizontalAlignment="Center" Text="TELEGRAM CHANNEL" FontSize="15" Cursor="Hand" TextDecorations="Underline">
                             <TextBlock.InputBindings>
                                 <MouseBinding Command="{s:Action DiscordInviteCommand}" MouseAction="LeftClick">
                                     <MouseBinding.CommandParameter>
@@ -213,6 +257,16 @@
                              Value="0"
                              IsIndeterminate="True"/>
                     <Label Margin="10,0,0,0" Content="{Binding GameProcessingText}" FontSize="14"/>
+                </StackPanel>
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+        <md:DialogHost Grid.RowSpan="3" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" IsOpen="{Binding IsInjectError}">
+            <md:DialogHost.DialogContent>
+                <StackPanel Margin="16" Orientation="Horizontal">
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                             Value="0"
+                             IsIndeterminate="True"/>
+                    <Label Margin="10,0,0,0" Content="{Binding InjectErrorText}" FontSize="14"/>
                 </StackPanel>
             </md:DialogHost.DialogContent>
         </md:DialogHost>

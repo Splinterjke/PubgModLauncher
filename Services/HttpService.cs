@@ -44,6 +44,7 @@ namespace PubgMod.Services
                 string insecurePassword = "";
                 passwordBSTR = Marshal.SecureStringToBSTR(password);
                 insecurePassword = Marshal.PtrToStringBSTR(passwordBSTR);
+                
                 var result = await GetAsync($"reg&email={username}&password={insecurePassword}&hwid={hwid}").ConfigureAwait(false);
                 if (result == null)
                 {
@@ -53,7 +54,7 @@ namespace PubgMod.Services
                 if (possibleError.Contains("user already exists") || possibleError.Contains("email is empty") || possibleError.Contains("password is empty"))
                 {
                     return new Tuple<bool, string>(true, result);
-                }
+                }                
                 return new Tuple<bool, string>(false, result);
             }
             catch (Exception ex)
@@ -70,6 +71,8 @@ namespace PubgMod.Services
                 string insecurePassword = "";
                 passwordBSTR = Marshal.SecureStringToBSTR(password);
                 insecurePassword = Marshal.PtrToStringBSTR(passwordBSTR);
+                Properties.Settings.Default.pwd = string.Empty;
+                Properties.Settings.Default.Save();
                 var result = await GetAsync($"auth&email={username}&password={insecurePassword}&hwid={hwid}").ConfigureAwait(false);
                 if (result == null)
                 {
@@ -80,6 +83,8 @@ namespace PubgMod.Services
                 {
                     return new Tuple<bool, string>(true, result);
                 }
+                Properties.Settings.Default.pwd = insecurePassword;
+                Properties.Settings.Default.Save();
                 return new Tuple<bool, string>(false, result);
             }
             catch (Exception ex)

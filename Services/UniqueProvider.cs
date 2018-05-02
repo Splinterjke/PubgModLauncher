@@ -51,7 +51,7 @@ namespace PubgMod.Services
             if (string.IsNullOrEmpty(_fingerPrint))
             {
                 //Можно убрать по необходимости не нужные генерации, если будут траблы у юзеров
-                _fingerPrint = GetHash("CPU >> " + CpuId() + "BIOS >> " + BiosId() + "BASE >> " + BaseId() + "DISK >> " + DiskId());
+                _fingerPrint = GetHash("CPU >> " + CpuId() + "BIOS >> " + BiosId()); // + "BASE >> " + BaseId() + "DISK >> " + DiskId());
             }
             return _fingerPrint;
         }
